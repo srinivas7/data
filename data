@@ -34,3 +34,8 @@ export class RegexComponent implements OnInit {
     <select name="someName" [(ngModel)]="someModel">
         <option *ngFor="let key of items" [value]="key.value">{{ key.label }}</option>
      </select>
+
+/////////////////////
+default drop down value url
+https://stackoverflow.com/questions/50876777/default-value-for-select-dropdown-with-angular-6
+
