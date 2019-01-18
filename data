@@ -16,3 +16,21 @@ export class RegexComponent implements OnInit {
 
  <input type="text" class="form-control" name="regex" [pattern]="regexPattern" [(ngModel)]="model.regex" #regex="ngModel" [ngClass]="{ 'is-invalid': f.submitted && regex.invalid }" required  />
  <div *ngIf="regex.errors.pattern">Email must be a valid email address</div>
+
+
+
+////dropdown default
+ items;
+  constructor() {
+    this.someModel = 'duration';
+    this.items = [
+                      {value: 'duration', label : 'Duration'}, 
+                      {value: 'other', label : 'Other'},
+                      {value: 'someOther', label : 'Some Other'}
+                    ];
+   }
+   
+   {{someModel}} model data is ....
+    <select name="someName" [(ngModel)]="someModel">
+        <option *ngFor="let key of items" [value]="key.value">{{ key.label }}</option>
+     </select>
