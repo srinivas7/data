@@ -43,3 +43,5 @@ export class RegexComponent implements OnInit {
 default drop down value url
 https://stackoverflow.com/questions/50876777/default-value-for-select-dropdown-with-angular-6
 
+#Run angular js project on node server
+https://stackoverflow.com/questions/18746834/deploy-angularjs-application-in-node-js
