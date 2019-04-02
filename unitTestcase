@@ -1,0 +1,119 @@
+import { Component, OnInit } from '@angular/core';
+import { FileUploader } from 'ng2-file-upload';
+import { FileUploadService } from './file-upload.service';
+import {PaginationInstance} from 'ngx-pagination';
+
+const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
+
+@Component({
+  selector: 'app-yearbook-covers',
+  templateUrl: './yearbook-covers.component.html',
+  styleUrls: ['./yearbook-covers.component.scss']
+})
+export class YearbookCoversComponent {
+  public uploader: FileUploader = new FileUploader({ url: URL });
+  
+  yearBookcovers = {
+    coverName: "",
+    bookSize: "",
+    coverType: "",
+    IvCN: "",
+    SSId: ""
+  };
+
+  yearBookCoverEdit = {
+    coverName: "",
+    bookSize: "",
+    coverType: "",
+    IvCN: "",
+    SSId: ""
+  };
+  ybcData;
+  fileData : File;
+  assetName: String = "";
+  editVisible: boolean = false;
+  
+  constructor(private fileUploadService: FileUploadService) { }
+
+  ngOnInit() {
+
+    this.uploader.onBeforeUploadItem = (fileItem: any) => {
+      fileItem.formData.push({ someField: "asdf" });
+      fileItem.formData.push({ someField2: "ssdf" });
+
+    };
+
+    this.loadYearBookCovers();
+  }
+
+  onfileChange(file){
+   this.fileData = file; 
+  }
+
+  submit(form) {
+    this.fileUploadService.postCovers(this.yearBookcovers)
+      .subscribe((res) => {
+        this.uploadYearBookFile();
+      })
+  }
+
+  downloadFile(coverInfo){
+    console.log(coverInfo);
+    this.fileUploadService.downloadFile(coverInfo.coverName)
+    .subscribe(() => {
+      console.log('file donwnloaded....');
+    })
+  }
+
+  
+  loadYearBookCovers() {
+    
+    this.fileUploadService.loadYBC().subscribe((res) => {
+      this.ybcData = res;
+
+    });
+  }
+  edit(row) {
+    this.editVisible = true;
+    this.yearBookCoverEdit = row;
+
+  }
+  onSave() {
+    console.log("onsave from edit ")
+    this.fileUploadService.uploadYearBook(this.yearBookCoverEdit)
+    .subscribe(() => {
+      this.loadYearBookCovers();
+    })
+  }
+  uploadFile(){
+
+  }
+  uploadYearBookFile() {
+    let fileInfo = {
+      'file' : this.fileData,
+      'assetName' : this.assetName
+    }
+    this.fileUploadService.storeYearBookFile(fileInfo)
+    .subscribe((res) => {
+      console.log('file uploaded succesfully');
+      this.loadYearBookCovers();
+      this.assetName = null; 
+    })
+  }
+
+  onCancel() {
+    this.yearBookCoverEdit = {
+      coverName: '',
+      bookSize: '',
+      coverType: '',
+      IvCN: '',
+      SSId: ''
+      
+    };
+    this.editVisible = false; 
+  }
+
+}
+
+
+
