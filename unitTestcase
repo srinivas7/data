@@ -120,15 +120,35 @@ import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
 
 import { FileUploadService }      from './file.upload.service';
 import { SomeComponent } from './some.component';
+import { Observable } from 'rxjs';
+
 
 class MockFileUploadService {
   isLoggedIn = true;
   user = { name: 'Test User'};
+  loadYBC(){
+    return new Observable();
+  }
 };
 
 describe('WelcomeComponent (class only)', () => {
   let comp: SomeComponent;
   let userService: FileUploadService;
+  let yearBookcovers = {
+    coverName: "",
+    bookSize: "",
+    coverType: "",
+    IvCN: "",
+    SSId: ""
+  };
+
+  let yearBookCoverEdit = {
+    coverName: "",
+    bookSize: "",
+    coverType: "",
+    IvCN: "",
+    SSId: ""
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -146,9 +166,16 @@ describe('WelcomeComponent (class only)', () => {
   it('checking', () => {
     expect(comp.welcome).toBeUndefined();
   });
+  it('equal', () => {
+    expect(comp.yearBookcovers).toEqual(yearBookcovers);
+  })
+  it('yearBookCoverEdit', () => {
+    expect(comp.yearBookCoverEdit).toEqual(yearBookCoverEdit);
+  })
+  it('comp.ngOnInit', () => {
+    comp.ngOnInit();
+    expect(comp.loadYearBookCovers()).toHaveBeenCalled();
+  })
 
   
 });
-
-
-
