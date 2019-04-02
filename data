@@ -49,3 +49,7 @@ https://stackoverflow.com/questions/18746834/deploy-angularjs-application-in-nod
 #Reactive forms
 https://malcoded.com/posts/angular-fundamentals-reactive-forms/
 https://blog.grossman.io/real-world-angular-reactive-forms/
+
+
+#sample test cases
+https://stackblitz.com/angular/lmgjxebqkrro?file=src%2Fapp%2Fwelcome%2Fwelcome.component.spec.ts
