@@ -1,1 +1,367 @@
+<div class="row">
+    <div class="container container-fluid">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <h1 i18n="@@yearbookCovers.title.yearbookCovers">Yearbook Covers</h1>
+                <br/>
+                <br/>
+                <form #form="ngForm" (ngSubmit)="submit(form.value)">
+                    <div class="form-group">
+                        <input Input placeholder="Cover Name:" name="CoverName" [ngModel]="yearBookcovers.coverName"/>
+                    </div>
+                    <br/>
+
+
+                    <div class="form-group">
+                        <input Input placeholder="Book Size:" name="BookSize" [ngModel]="yearBookcovers.bookSize"/>
+                    </div>
+                    <br/>
+
+                    <div class="form-group">
+                        <input Input placeholder="Cover Type:" name="CoverType" [ngModel]="yearBookcovers.coverType"/>
+                    </div>
+                    <br/>
+
+                    <div class="form-group">
+                        <input Input placeholder="Inventory Control Number:" name="IvCN"
+                               [ngModel]="yearBookcovers.IvCN"/>
+                    </div>
+                    <br/>
+
+                    <div class="form-group">
+                        <input Input placeholder="Shutterfly Stock ID:" name="SSId" [ngModel]="yearBookcovers.SSId"/>
+                    </div>
+                    <br/>
+                    <div class="upload form-group">
+                        <input type="file" name="fileUpload" (change)="onfileChange($event)">
+                    </div>
+
+                    <br/>
+
+                    <input type="submit" class="btn btn-success" value="Submit"/>
+                </form>
+
+                <br/>
+            </div>
+        </div>
+
+        <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9">
+            <br/>
+            <div #CoversTable>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9" id="tableid">
+                    <br/>
+                    <table class="table table-responsive table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="TableHeader">Cover Name</th>
+                            <th class="TableHeader">Book Size</th>
+                            <th class="TableHeader">Cover Type</th>
+                            <th class="TableHeader">Inventory Control Number</th>
+                            <th class="TableHeader">Shutterfly Stock ID</th>
+                            <th class="TableEdit"></th>
+                            <th class="TableDelete"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let ybc of ybcData | paginate: { itemsPerPage: 5, currentPage: p }">
+                            <td class="Table">{{ybc.coverName}}</td>
+                            <td class="Table">{{ybc.bookSize}}</td>
+                            <td class="Table">{{ybc.coverType}}</td>
+                            <td class="Table">{{ybc.invtCtrlNumber}}</td>
+                            <td class="Table">{{ybc.shutterflyStockIDCtrlNum}}</td>
+                            <td>
+                                <button (click)="edit(ybc)">Edit</button>
+                            </td>
+                            <td>
+                                <button (click)="downloadFile(ybc)"><i class="fa fa-download"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+                </div>
+                <br/>
+
+                <div class="regentry" *ngIf="editVisible">
+                    <form (ngSubmit)="onSave()">
+
+                        <div class="form-group">
+                            <input Input placeholder="Cover Name:" name="coverName"
+                                   [(ngModel)]="yearBookCoverEdit.coverName"/>
+                        </div>
+                        <br/>
+
+                        <div class="form-group">
+                            <input Input placeholder="Book Size:" name="bookSize"
+                                   [(ngModel)]="yearBookCoverEdit.bookSize"/>
+                        </div>
+                        <br/>
+
+                        <div class="form-group">
+                            <input Input placeholder="Cover Type:" name="bookType"
+                                   [(ngModel)]="yearBookCoverEdit.coverType"/>
+                        </div>
+                        <br/>
+
+                        <div class="form-group">
+                            <input Input placeholder="Inventory Control Number:" name="IvCN"
+                                   [(ngModel)]="yearBookCoverEdit.IvCN"/>
+                        </div>
+                        <br/>
+
+                        <div class="form-group">
+                            <input Input placeholder="Shutterfly Stock ID:" name="SSID"
+                                   [(ngModel)]="yearBookCoverEdit.SSId"/>
+                        </div>
+                        <br/>
+
+                        <button type="submit" class="btn btn-success" (click)="updateYearBook()">Update</button>
+                        <button type="submit" class="btn btn-primary" (click)="onCancel()">Cancel</button>
+                    </form>
+                </div>
+    
+
+=======================================================================================================================================
+
+import {Injectable, Inject, forwardRef} from '@angular/core';
+import {Headers, Http, Jsonp, Request, RequestMethod, Response} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
+import {BaseService} from '../core/base.service';
+import {AlerterService} from '../core/components/alerter/alerter.service';
+
+@Injectable()
+export class FileUploadService extends BaseService {
+
+    constructor(http: Http, jsonp: Jsonp, alerterService: AlerterService) {
+        super(http, jsonp, alerterService);
+    }
+
+    postCovers(data) {
+        return this.request({
+            body: data,
+            method: RequestMethod.Post,
+            url: `${this.apiRoot()}/v1/yearbooks/cover-asset`
+        });
+
+    }
+
+    loadYBC() {
+        return this.request({
+            method: RequestMethod.Get,
+            url: 'http://localhost:8089/api/v1/yearbooks/cover-asset'
+        });
+    }
+
+    uploadYearBook(data) {
+        return this.request({
+            body: data,
+            method: RequestMethod.Put,
+            url: `${this.apiRoot()}/v1/updateYearBookcovers`
+        });
+    }
+
+    storeYearBookFile(file) {
+        return this.request({
+            body: file,
+            method: RequestMethod.Post,
+            url: `${this.apiRoot()}/v1/uploadFile`
+        });
+    }
+
+    downloadFile(coverName) {
+        return this.request({
+            method: RequestMethod.Get,
+            url: `${this.apiRoot()}/v1/downloaddFile&coverName=${coverName}`
+        });
+    }
+
+}
+
+
+==========================================================================================================================================
+
+import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
+
+import { FileUploadService }  from './file-upload.service';
+import { YearbookCoversComponent } from './yearbook-covers.component';
+import { Observable } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+
+class MockFileUploadService {
+  isLoggedIn = true;
+  user = { name: 'Test User'};
+  loadYBC(){
+    return new Observable();
+  }
+};
+
+fdescribe('YearbookCoversComponent', () => {
+  let comp: YearbookCoversComponent;
+  let userService: FileUploadService;
+  let yearBookcovers = {
+    coverName: "",
+    bookSize: "",
+    coverType: "",
+    IvCN: "",
+    SSId: ""
+  };
+
+  let yearBookCoverEdit = {
+    coverName: "",
+    bookSize: "",
+    coverType: "",
+    IvCN: "",
+    SSId: ""
+  };
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      // provide the component-under-test and dependent service
+      providers: [
+        YearbookCoversComponent,
+        { provide: FileUploadService, useClass: MockFileUploadService }
+      ],
+       imports : [FormsModule]
+    });
+    // inject both the component and the dependent service.
+    comp = TestBed.get(YearbookCoversComponent);
+    userService = TestBed.get(FileUploadService);
+  });
+
+  
+  it('equal', () => {
+    expect(comp.yearBookcovers).toEqual(yearBookcovers);
+  })
+  it('yearBookCoverEdit', () => {
+    expect(comp.yearBookCoverEdit).toEqual(yearBookCoverEdit);
+  })
+  xit('comp.ngOnInit', () => {
+    comp.ngOnInit();
+    expect(comp.loadYearBookCovers()).toHaveBeenCalled();
+  })
+
+  
+});
+
+
+
+=======================================================================================================================================
+
+import {Component, OnInit} from '@angular/core';
+import {FileUploader} from 'ng2-file-upload';
+import {FileUploadService} from './file-upload.service';
+import {PaginationInstance} from 'ngx-pagination';
+
+const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
+
+@Component({
+    selector: 'app-yearbook-covers',
+    templateUrl: './yearbook-covers.component.html',
+    styleUrls: ['./yearbook-covers.component.scss']
+})
+export class YearbookCoversComponent implements OnInit {
+    public uploader: FileUploader = new FileUploader({url: URL});
+
+    yearBookcovers = {
+        coverName: '',
+        bookSize: '',
+        coverType: '',
+        IvCN: '',
+        SSId: ''
+    };
+
+    yearBookCoverEdit = {
+        coverName: '',
+        bookSize: '',
+        coverType: '',
+        IvCN: '',
+        SSId: ''
+    };
+
+    ybcData;
+    fileData: File;
+    assetName: String = '';
+    editVisible = false;
+
+    constructor(private fileUploadService: FileUploadService) {
+    }
+
+    ngOnInit() { 
+        this.loadYearBookCovers();
+    }
+    
+    onfileChange(file) {
+        this.fileData = file;
+    }
+
+    submit(form) {
+        this.fileUploadService.postCovers(this.yearBookcovers)
+            .subscribe((res) => {
+                this.uploadYearBookFile();
+            });
+    }
+
+    downloadFile(coverInfo) {
+        this.fileUploadService.downloadFile(coverInfo.coverName)
+            .subscribe(() => {
+            });
+    }
+
+
+    loadYearBookCovers() {
+
+        this.fileUploadService.loadYBC().subscribe((res) => {
+            this.ybcData = res;
+
+        });
+    }
+
+    edit(row) {
+        this.editVisible = true;
+        this.yearBookCoverEdit = row;
+
+    }
+
+    onSave() {
+        this.fileUploadService.uploadYearBook(this.yearBookCoverEdit)
+            .subscribe(() => {
+                this.loadYearBookCovers();
+            });
+    }
+
+    uploadFile() {
+
+    }
+
+    uploadYearBookFile() {
+        const fileInfo = {
+            'file': this.fileData,
+            'assetName': this.assetName
+        };
+        this.fileUploadService.storeYearBookFile(fileInfo)
+            .subscribe((res) => {
+                this.loadYearBookCovers();
+                this.assetName = null;
+            });
+    }
+
+    onCancel() {
+        this.yearBookCoverEdit = {
+            coverName: '',
+            bookSize: '',
+            coverType: '',
+            IvCN: '',
+            SSId: ''
+
+        };
+        this.editVisible = false;
+    }
+
+}
+
+
+
+
+
 
